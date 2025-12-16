@@ -1,0 +1,7 @@
+ALTER TABLE products ADD COLUMN stock INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE products ADD COLUMN image_url TEXT NOT NULL DEFAULT '';
+
+ALTER TABLE categories ADD COLUMN color TEXT NOT NULL DEFAULT '#3b5bfd';
+ALTER TABLE categories ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1;
+
+CREATE INDEX IF NOT EXISTS idx_categories_active ON categories(is_active);

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Backend install
+        working-directory: ironfuel-ecommerce/backend
+        run: npm ci
+
+      - name: Backend tests
+        working-directory: ironfuel-ecommerce/backend
+        run: npm test
+
+      - name: Frontend install
+        working-directory: ironfuel-ecommerce/frontend
+        run: npm ci
+
+      - name: Frontend build
+        working-directory: ironfuel-ecommerce/frontend
+        run: npm run build
+
+  deploy_prod:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Deploy (Render deploy hook)
+        if: ${{ secrets.RENDER_DEPLOY_HOOK != '' }}
+        run: |
+          curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Smoke test /health
+        if: ${{ secrets.PROD_HEALTH_URL != '' }}
+        run: |
+          sleep 25
+          curl -f "${{ secrets.PROD_HEALTH_URL }}/health"
