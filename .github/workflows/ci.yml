@@ -17,14 +17,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: Backend install & build
-        working-directory: ironfuel-ecommerce/backend
+      - name: Backend install
         run: |
+          cd backend
           npm ci
-          npm run build || echo "no backend build step"
 
       - name: Frontend install & build
-        working-directory: ironfuel-ecommerce/frontend
         run: |
+          cd frontend
           npm ci
           npm run build
